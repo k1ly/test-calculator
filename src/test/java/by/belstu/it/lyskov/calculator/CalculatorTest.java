@@ -2,6 +2,7 @@ package by.belstu.it.lyskov.calculator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.util.Optional;
 
@@ -14,6 +15,17 @@ class CalculatorTest {
     @BeforeEach
     void init() {
         calculator = new Calculator();
+    }
+
+    @Test
+    void testNotNullLineShouldNotTrow() {
+        String line = "123+45";
+        assertDoesNotThrow(new Executable() {
+            @Override
+            public void execute() {
+                calculator.solve(line);
+            }
+        });
     }
 
     @Test
@@ -50,6 +62,51 @@ class CalculatorTest {
         double expected = 27;
         assertTrue(actual.isPresent());
         assertEquals(expected, actual.get());
+    }
+
+    @Test
+    void testNullLineShouldThrow() {
+        assertThrows(NullPointerException.class, new Executable() {
+            @Override
+            public void execute() {
+                calculator.solve(null);
+            }
+        });
+    }
+
+    @Test
+    void testEmptyLineShouldProduceEmptyResult() {
+        String line = "     ";
+        Optional<Double> actual = calculator.solve(line);
+        assertFalse(actual.isPresent());
+    }
+
+    @Test
+    void testSingleNumberShouldProduceEmptyResult() {
+        String line = "123";
+        Optional<Double> actual = calculator.solve(line);
+        assertFalse(actual.isPresent());
+    }
+
+    @Test
+    void testResultShouldBeEmptyIfLineInvalid() {
+        String line = "*438+";
+        Optional<Double> actual = calculator.solve(line);
+        assertFalse(actual.isPresent());
+    }
+
+    @Test
+    void testResultShouldBeEmptyIfLineIsWord() {
+        String line = "Hello, world!";
+        Optional<Double> actual = calculator.solve(line);
+        assertFalse(actual.isPresent());
+    }
+
+    @Test
+    void testResultShouldBeEmptyIfLineHasInvalidOperations() {
+        String line = "83(34&23)11=79";
+        Optional<Double> actual = calculator.solve(line);
+        assertFalse(actual.isPresent());
     }
 
 }

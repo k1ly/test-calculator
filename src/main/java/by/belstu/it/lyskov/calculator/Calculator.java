@@ -6,28 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class Calculator extends Thread {
-
-    @Override
-    public void run() {
-        System.out.println("Введите строку запроса для расчета:");
-        System.out.println("(Чтобы выйти напишите q)");
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            String line = scanner.nextLine();
-            if (line.contains("=") && !line.endsWith("=")) {
-                System.out.println("Это похоже на уравнение, попробуйте снова");
-            } else if (line.equalsIgnoreCase("Q"))
-                break;
-            else {
-                line = line.replaceAll("=", "");
-                Optional<Double> result = solve(line);
-                if (result.isPresent())
-                    System.out.println(result.get());
-                else System.out.println("Неверный ввод");
-            }
-        }
-    }
+public class Calculator {
 
     public Optional<Double> solve(String line) {
         Optional<Double> optional = Optional.empty();
@@ -56,8 +35,7 @@ public class Calculator extends Thread {
                         public boolean test(CalculatorToken token) {
                             return token.isOperation();
                         }
-                    })
-                    .sorted(new Comparator<CalculatorToken>() {
+                    }).sorted(new Comparator<CalculatorToken>() {
                         @Override
                         public int compare(CalculatorToken token1, CalculatorToken token2) {
                             if ((token1.getOperation() == '*' || token1.getOperation() == '/')
